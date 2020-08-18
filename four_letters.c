@@ -146,7 +146,7 @@ void game_state_process()
                         appdata->ticks = 0;
 
                         if (appdata->is_valid_word && appdata->game_state.score > appdata->max_score)
-                            ElfWriteSettings(0, &appdata->game_state.score, 0, 2);
+                            ElfWriteSettings(ELF_INDEX_SELF, &appdata->game_state.score, 0, 2);
                     }
                 }
             }
@@ -282,8 +282,8 @@ void print_digits(int value, int x, int y, int spacing)
     {
         int mm = max == 0 ? 0 : value / max;
 
-        get_res_params(0, RES_DIGIT_START+mm, &res_params);
-        show_elf_res_by_id(0, RES_DIGIT_START + mm, x, y);
+        get_res_params(ELF_INDEX_SELF, RES_DIGIT_START+mm, &res_params);
+        show_elf_res_by_id(ELF_INDEX_SELF, RES_DIGIT_START + mm, x, y);
         x += res_params.width + spacing;
         if (max == 0)
             break;
@@ -313,7 +313,7 @@ int get_symbols_width(byte* value, int spacing, int is_big)
             break;
 
         struct res_params_ res_params;
-        get_res_params(0, res, &res_params);
+        get_res_params(ELF_INDEX_SELF, res, &res_params);
         x += res_params.width + spacing;
     }
     return x > 0 ? x - spacing : 0;
@@ -338,8 +338,8 @@ void print_symbols(byte* value, int x, int y, int spacing, int is_big)
             break;
 
         struct res_params_ res_params;
-        get_res_params(0, res, &res_params);
-        show_elf_res_by_id(0, res, x, y);
+        get_res_params(ELF_INDEX_SELF, res, &res_params);
+        show_elf_res_by_id(ELF_INDEX_SELF, res, x, y);
         x += res_params.width + spacing;
     }
 }
@@ -363,17 +363,19 @@ void draw_screen()
     byte sym[5];
 
     set_graph_callback_to_ram_1();
+    load_font();
+
     set_bg_color(COLOR_BLACK);
     fill_screen_bg();
 
     switch (appdata->current_screen)
     {
         case GAME_STATE_START:
-            show_elf_res_by_id(0, RES_TITLE, 55, 0);
+            show_elf_res_by_id(ELF_INDEX_SELF, RES_TITLE, 55, 0);
             print_symbols(_bytes_title, 12, 55, 5, true);
             print_symbols(_bytes_record, 5, 155, 1, false);
 
-            ElfReadSettings(0, &appdata->max_score, 0, 2);
+            ElfReadSettings(ELF_INDEX_SELF, &appdata->max_score, 0, 2);
             
             print_digits(appdata->max_score, 85, 157, 2);
 
@@ -383,7 +385,7 @@ void draw_screen()
             xrand = randint(2);
             yrand = randint(2);
 
-            show_elf_res_by_id(0, RES_START, xrand-1+35, yrand-1+110);
+            show_elf_res_by_id(ELF_INDEX_SELF, RES_START, xrand-1+35, yrand-1+110);
 
             break;
 
@@ -391,9 +393,9 @@ void draw_screen()
             set_bg_color(COLOR_BLACK);
             fill_screen_bg();
 
-            show_elf_res_by_id(0, RES_SCORE, 5, 5);
+            show_elf_res_by_id(ELF_INDEX_SELF, RES_SCORE, 5, 5);
             print_digits(appdata->game_state.score, 51, 5, 2);
-            show_elf_res_by_id(0, RES_WORDS, 110, 5);
+            show_elf_res_by_id(ELF_INDEX_SELF, RES_WORDS, 110, 5);
             print_digits(appdata->game_state.words, 154, 5, 2);
 
             if (appdata->game_state.selected_letter_count > 0)
@@ -450,7 +452,7 @@ void draw_screen()
 
             if (appdata->game_state.time == 0)
             {
-                show_elf_res_by_id(0, RES_TIMELEFT, 23, 75 + appdata->ticks);
+                show_elf_res_by_id(ELF_INDEX_SELF, RES_TIMELEFT, 23, 75 + appdata->ticks);
             }
 
             break;
@@ -481,7 +483,7 @@ void draw_screen()
             xrand = randint(2);
             yrand = randint(2);
 
-            show_elf_res_by_id(0, RES_AGAIN, xrand - 1 + 35, yrand - 1 + 110);
+            show_elf_res_by_id(ELF_INDEX_SELF, RES_AGAIN, xrand - 1 + 35, yrand - 1 + 110);
             print_digits(appdata->game_state.score, 80, 157, 2);
 
             break;
